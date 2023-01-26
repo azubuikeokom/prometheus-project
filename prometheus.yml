@@ -1,0 +1,31 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+rule_files:
+  - alert.rules.yml
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - '0.0.0.0:9093'
+scrape_configs:
+  - job_name: ec2-node-exporter
+    metrics_path: '/metrics'
+    ec2_sd_configs:
+    - region: us-east-1
+      port: 9100
+      access_key: <acces key>
+      secret_key: <secret key>
+      filters:
+      - name: tag:Name
+        values: 
+        - prom-test-server
+  - job_name: 'prometheus'
+    static_configs:
+    - targets: ['localhost:9090']
+      labels:
+        alias: 'prometheus'
+  - job_name: 'yace-clouwatch-exporter'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['0.0.0.0:5000']
